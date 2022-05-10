@@ -27,6 +27,7 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/AzureAD/microsoft-authentication-library-for-go/apps/cache"
 	"github.com/AzureAD/microsoft-authentication-library-for-go/apps/internal/base"
@@ -308,10 +309,15 @@ func (pca Client) AcquireTokenInteractive(ctx context.Context, scopes []string, 
 	authParams.CodeChallengeMethod = "S256"
 	authParams.State = uuid.New().String()
 	authParams.Prompt = "select_account"
+	qv := url.Values{}
+	accesstokens.AddScopeQueryParam(qv, authParams)
+	authParams.Scopes = strings.Split(qv.Get("scope"), " ")
+
 	res, err := pca.browserLogin(ctx, redirectURL, authParams)
 	if err != nil {
 		return AuthResult{}, err
 	}
+	authParams.Scopes = scopes
 	authParams.Redirecturi = res.redirectURI
 
 	req, err := accesstokens.NewCodeChallengeRequest(authParams, accesstokens.ATPublic, nil, res.authCode, cv)

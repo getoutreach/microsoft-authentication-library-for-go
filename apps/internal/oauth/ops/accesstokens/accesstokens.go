@@ -166,7 +166,7 @@ func (c Client) FromUsernamePassword(ctx context.Context, authParameters authori
 	qv.Set(password, authParameters.Password)
 	qv.Set(clientID, authParameters.ClientID)
 	qv.Set(clientInfo, clientInfoVal)
-	addScopeQueryParam(qv, authParameters)
+	AddScopeQueryParam(qv, authParameters)
 
 	return c.doTokenResp(ctx, authParameters, qv)
 }
@@ -222,7 +222,7 @@ func (c Client) FromAuthCode(ctx context.Context, req AuthCodeRequest) (TokenRes
 	qv.Set("redirect_uri", req.AuthParams.Redirecturi)
 	qv.Set(clientID, req.AuthParams.ClientID)
 	qv.Set(clientInfo, clientInfoVal)
-	addScopeQueryParam(qv, req.AuthParams)
+	AddScopeQueryParam(qv, req.AuthParams)
 
 	return c.doTokenResp(ctx, req.AuthParams, qv)
 }
@@ -241,7 +241,7 @@ func (c Client) FromRefreshToken(ctx context.Context, appType AppType, authParam
 	qv.Set(clientID, authParams.ClientID)
 	qv.Set(clientInfo, clientInfoVal)
 	qv.Set("refresh_token", refreshToken)
-	addScopeQueryParam(qv, authParams)
+	AddScopeQueryParam(qv, authParams)
 
 	return c.doTokenResp(ctx, authParams, qv)
 }
@@ -252,7 +252,7 @@ func (c Client) FromClientSecret(ctx context.Context, authParameters authority.A
 	qv.Set(grantType, grant.ClientCredential)
 	qv.Set("client_secret", clientSecret)
 	qv.Set(clientID, authParameters.ClientID)
-	addScopeQueryParam(qv, authParameters)
+	AddScopeQueryParam(qv, authParameters)
 
 	token, err := c.doTokenResp(ctx, authParameters, qv)
 	if err != nil {
@@ -268,7 +268,7 @@ func (c Client) FromAssertion(ctx context.Context, authParameters authority.Auth
 	qv.Set("client_assertion", assertion)
 	qv.Set(clientID, authParameters.ClientID)
 	qv.Set(clientInfo, clientInfoVal)
-	addScopeQueryParam(qv, authParameters)
+	AddScopeQueryParam(qv, authParameters)
 
 	token, err := c.doTokenResp(ctx, authParameters, qv)
 	if err != nil {
@@ -285,7 +285,7 @@ func (c Client) FromUserAssertionClientSecret(ctx context.Context, authParameter
 	qv.Set("assertion", userAssertion)
 	qv.Set(clientInfo, clientInfoVal)
 	qv.Set("requested_token_use", "on_behalf_of")
-	addScopeQueryParam(qv, authParameters)
+	AddScopeQueryParam(qv, authParameters)
 
 	return c.doTokenResp(ctx, authParameters, qv)
 }
@@ -299,7 +299,7 @@ func (c Client) FromUserAssertionClientCertificate(ctx context.Context, authPara
 	qv.Set("assertion", userAssertion)
 	qv.Set(clientInfo, clientInfoVal)
 	qv.Set("requested_token_use", "on_behalf_of")
-	addScopeQueryParam(qv, authParameters)
+	AddScopeQueryParam(qv, authParameters)
 
 	return c.doTokenResp(ctx, authParameters, qv)
 }
@@ -307,7 +307,7 @@ func (c Client) FromUserAssertionClientCertificate(ctx context.Context, authPara
 func (c Client) DeviceCodeResult(ctx context.Context, authParameters authority.AuthParams) (DeviceCodeResult, error) {
 	qv := url.Values{}
 	qv.Set(clientID, authParameters.ClientID)
-	addScopeQueryParam(qv, authParameters)
+	AddScopeQueryParam(qv, authParameters)
 
 	endpoint := strings.Replace(authParameters.Endpoints.TokenEndpoint, "token", "devicecode", -1)
 
@@ -326,7 +326,7 @@ func (c Client) FromDeviceCodeResult(ctx context.Context, authParameters authori
 	qv.Set(deviceCode, deviceCodeResult.DeviceCode)
 	qv.Set(clientID, authParameters.ClientID)
 	qv.Set(clientInfo, clientInfoVal)
-	addScopeQueryParam(qv, authParameters)
+	AddScopeQueryParam(qv, authParameters)
 
 	return c.doTokenResp(ctx, authParameters, qv)
 }
@@ -338,7 +338,7 @@ func (c Client) FromSamlGrant(ctx context.Context, authParameters authority.Auth
 	qv.Set(clientID, authParameters.ClientID)
 	qv.Set(clientInfo, clientInfoVal)
 	qv.Set("assertion", base64.StdEncoding.WithPadding(base64.StdPadding).EncodeToString([]byte(samlGrant.Assertion)))
-	addScopeQueryParam(qv, authParameters)
+	AddScopeQueryParam(qv, authParameters)
 
 	switch samlGrant.AssertionType {
 	case grant.SAMLV1:
@@ -410,7 +410,7 @@ func AppendDefaultScopes(authParameters authority.AuthParams) []string {
 	return scopes
 }
 
-func addScopeQueryParam(queryParams url.Values, authParameters authority.AuthParams) {
+func AddScopeQueryParam(queryParams url.Values, authParameters authority.AuthParams) {
 	scopes := AppendDefaultScopes(authParameters)
 	queryParams.Set("scope", strings.Join(scopes, " "))
 }
